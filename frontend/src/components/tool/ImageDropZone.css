@@ -1,0 +1,61 @@
+.drop-image-zone {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.3s, background-color 0.3s;
+  background-color: rgb(255, 255, 255);
+  height: max-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drop-image-zone.drag-hover {
+  background-color: #f0f8ff;
+  border-color: #00aaff;
+}
+
+.drop-image-zone.filed {
+  padding: 0;
+  border: none;
+  background-color: transparent;
+}
+
+.preview-container {
+}
+
+.preview-thumbnail {
+  max-width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+.save-btn {
+  padding: 5px 20px;
+  background-color: rgba(7, 224, 7, 0.592);
+  border: none;
+  color: rgb(255, 255, 255);
+  position: absolute;
+  bottom: -55px;
+}

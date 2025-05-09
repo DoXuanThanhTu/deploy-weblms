@@ -1,0 +1,92 @@
+.chapter {
+  list-style: none;
+  margin-bottom: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.chapter-header:hover {
+  background-color: #c9c9f7;
+}
+
+.chapter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 30px;
+  padding: 12px;
+  cursor: pointer;
+}
+.options {
+  display: flex;
+  padding: 5px 10px 5px 18px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.option {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.icon {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease;
+}
+
+.icon.rotate {
+  transform: rotate(180deg);
+}
+
+.lessons {
+  list-style: none;
+  min-height: 30px;
+}
+
+.lesson {
+  padding: 15px 10px 15px 18px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 350px;
+}
+
+.lesson.hover {
+  cursor: grab;
+  color: rgb(134, 196, 250);
+}
+.lesson.hover:hover {
+  background-color: #7af59d6f;
+}
+.mode {
+  display: flex;
+  gap: 10px;
+  margin-left: 10px;
+  flex-wrap: wrap;
+}
+.mode button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 50px;
+  background-color: rgb(238, 234, 234);
+  cursor: pointer;
+}
+@media (max-width: 500px) {
+  .ellipsis {
+    max-width: 200px;
+  }
+}
+@media (max-width: 350px) {
+  .ellipsis {
+    max-width: 150px;
+  }
+}

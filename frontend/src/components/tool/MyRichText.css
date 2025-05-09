@@ -1,0 +1,43 @@
+/* editorStyles.css */
+.toolbar {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.toolbar button,
+.toolbar label {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+.toolbar button:hover,
+.toolbar label:hover {
+  background: #e0e0e0;
+}
+
+.editor-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  min-height: 300px;
+  cursor: text;
+  background: #fff;
+}
+
+.json-preview {
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
