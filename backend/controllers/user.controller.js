@@ -84,7 +84,14 @@ const loginUser = async (req, res) => {
   }
 };
 const logoutUser = async (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,       
+    secure: process.env.NODE_ENV === "production",  
+    sameSite: "None",      
+    maxAge: 0,            
+  });
+
   res.status(200).json({ message: "Logout successful!" });
 };
+
 export { createUser, getUser, registerUser, loginUser, logoutUser };
