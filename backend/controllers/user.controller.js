@@ -69,11 +69,13 @@ const loginUser = async (req, res) => {
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET
     );
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV == "production",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+     res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV == "production",
+        sameSite: "None",
+
+    maxAge: 2 * 60 * 60 * 1000,
+  });
     const { password: hashedPassword, ...others } = user.toObject();
     return res.status(200).json(others);
   } catch (error) {
