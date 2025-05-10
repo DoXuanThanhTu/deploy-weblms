@@ -44,8 +44,14 @@ const registerUser = async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV == "production",
+<<<<<<< HEAD
     sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000,
+=======
+        sameSite: "None",
+
+    maxAge: 2 * 60 * 60 * 1000,
+>>>>>>> 37ac37041a583d75d05a1a7a8ccc553b95216f94
   });
   return res.status(200).json(user);
 };
@@ -68,6 +74,7 @@ const loginUser = async (req, res) => {
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET
     );
+<<<<<<< HEAD
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV == "production",
@@ -75,6 +82,15 @@ const loginUser = async (req, res) => {
 
       maxAge: 2 * 60 * 60 * 1000,
     });
+=======
+     res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV == "production",
+        sameSite: "None",
+
+    maxAge: 2 * 60 * 60 * 1000,
+  });
+>>>>>>> 37ac37041a583d75d05a1a7a8ccc553b95216f94
     const { password: hashedPassword, ...others } = user.toObject();
     return res.status(200).json(others);
   } catch (error) {
@@ -101,7 +117,18 @@ const updateUser = async (req, res) => {
   }
 };
 const logoutUser = async (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,       
+    secure: process.env.NODE_ENV === "production",  
+    sameSite: "None",      
+    maxAge: 0,            
+  });
+
   res.status(200).json({ message: "Logout successful!" });
 };
+<<<<<<< HEAD
 export { createUser, getUser, registerUser, loginUser, logoutUser, updateUser };
+=======
+
+export { createUser, getUser, registerUser, loginUser, logoutUser };
+>>>>>>> 37ac37041a583d75d05a1a7a8ccc553b95216f94
