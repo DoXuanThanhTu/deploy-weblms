@@ -87,6 +87,9 @@ const Navbar = () => {
   const handleCustomUser = () => {
     setCustomUser(!customUser);
   };
+  const handleMyCourse = () => {
+    navigate("/my-course");
+  };
   const handleLogout = async () => {
     try {
       const res = await axios.post(
@@ -160,6 +163,7 @@ const Navbar = () => {
             />
             {currentUser.username}
             {customUser && <button onClick={handleLogout}>Logout</button>}
+            {customUser && <button onClick={handleMyCourse}>MyCourse</button>}
           </div>
         )}
       </Wrapper>

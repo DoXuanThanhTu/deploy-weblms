@@ -6,7 +6,7 @@ import api from "../../../utils/apiRequest.js";
 import useAuthStore from "../../../utils/authStore.js";
 const proxy = import.meta.env.VITE_API_URL;
 
-const Chapter = ({ chapter }) => {
+const Chapter = ({ chapter, courseId }) => {
   const [lessons, setLessons] = useState([]);
   const [lessonId, setLessonId] = useState([]);
   const [editChapter, setEditChapter] = useState("close");
@@ -15,6 +15,7 @@ const Chapter = ({ chapter }) => {
   const [updating, setUpdating] = useState(false);
   const [dragIndex, setDragIndex] = useState(null);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState([]);
+  const [newChapterTitle, setNewChapterTitle] = useState(chapter.title); // for renaming chapter
 
   const { currentUser } = useAuthStore();
   const fetchLessons = async () => {
@@ -96,7 +97,8 @@ const Chapter = ({ chapter }) => {
         await api.post(`/lessons/create`, {
           title: lesson.title,
           order: lesson.order,
-          chapterId: lesson.chapterId,
+          chapterId: chapter._id,
+          courseId: courseId,
           createdBy: currentUser._id,
         });
       }
@@ -108,6 +110,30 @@ const Chapter = ({ chapter }) => {
 
     setEditChapter("edit");
   };
+  const handleSaveRenameChapter = async () => {
+    if (newChapterTitle !== chapter.title) {
+      try {
+        setUpdating(true);
+        await api.patch(`/chapters/${chapter._id}`, {
+          title: newChapterTitle,
+        });
+        chapter.title = newChapterTitle;
+        setEditChapter("close");
+      } catch (error) {
+        console.error("Error renaming chapter:", error);
+      } finally {
+        setUpdating(false);
+      }
+    } else {
+      setEditChapter("close");
+    }
+  };
+
+  const handleCancelRename = () => {
+    setNewChapterTitle(chapter.title);
+    setEditChapter("close");
+  };
+
   const handleDragStart = (index) => {
     if (!editChapter === "order") {
       return;
@@ -159,6 +185,23 @@ const Chapter = ({ chapter }) => {
     }
     setEditChapter("edit");
   };
+  const handleRemove = async () => {
+    const res = confirm(`Bạn có chắc muốn xóa chapter: ${chapter.title} ?`);
+    if (res) {
+      setUpdating(true);
+      try {
+        await api.delete(`/chapters/${chapter._id}`);
+        setUpdating(false);
+        window.location.reload();
+      } catch (error) {
+        setUpdating(false);
+        console.error("Error deleting chapter:", error);
+      }
+    } else {
+      return;
+    }
+  };
+
   return (
     <li className="chapter">
       <div className="chapter-header">
@@ -182,7 +225,7 @@ const Chapter = ({ chapter }) => {
               alt="Close"
             />
           )}
-          <img src="/icons/delete.svg" alt="Delete" />
+          <img src="/icons/delete.svg" alt="Delete" onClick={handleRemove} />
           <img
             src="/icons/arrow_drop.svg"
             className={`icon ${open ? "rotate" : ""}`}
@@ -193,6 +236,10 @@ const Chapter = ({ chapter }) => {
       </div>
       {editChapter === "edit" && (
         <div className="mode">
+          <button onClick={() => switchEditMode("rename")}>
+            💻 Change Name
+          </button>
+
           <button onClick={() => switchEditMode("add")}>➕ Add Lesson</button>
           <button onClick={() => switchEditMode("delete")}>
             ❌ Delete Lesson
@@ -221,6 +268,17 @@ const Chapter = ({ chapter }) => {
         <div className="mode">
           <button onClick={handleSaveOrder}>💾 Save</button>
           <button onClick={handleCancel}>❎ Cancel</button>
+        </div>
+      )}
+      {editChapter === "rename" && (
+        <div className="rename-chapter">
+          <input
+            type="text"
+            value={newChapterTitle}
+            onChange={(e) => setNewChapterTitle(e.target.value)}
+          />
+          <button onClick={handleSaveRenameChapter}>Save</button>
+          <button onClick={handleCancelRename}>Cancel</button>
         </div>
       )}
       {open && (

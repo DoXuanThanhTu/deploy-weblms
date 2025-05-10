@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import "./AddCourse.css";
 import ImageUpload from "../../../components/tool/ImageUpload";
 import Uploading from "../../../components/tool/Uploading";
-import axios from "axios";
-
+import useAuthStore from "../../../utils/authStore";
+import api from "../../../utils/apiRequest";
 const proxy = import.meta.env.VITE_API_URL;
 const publicKey = "public_SsuFxqpe+LsB5KB1RcRwSUDs5nk=";
-
 const AddCourse = () => {
+  const { currentUser } = useAuthStore();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -31,9 +31,8 @@ const AddCourse = () => {
 
   const handleUpload = async () => {
     try {
-      const authRes = await axios.get(`${proxy}/imagekit/auth`);
+      const authRes = await api.get(`/imagekit/auth`);
       const { signature, expire, token } = authRes.data;
-
       const formData = new FormData();
       formData.append("file", file);
       formData.append("fileName", file.name);
@@ -42,23 +41,23 @@ const AddCourse = () => {
       formData.append("expire", expire);
       formData.append("token", token);
 
-      const res = await axios.post(`${proxy}/imagekit/upload`, formData);
+      const res = await api.post(`/imagekit/upload`, formData);
       setImageUrl(res.data.url);
 
       const course = {
         title,
         description,
         thumbnail: res.data.url,
+        createdBy: currentUser._id,
       };
 
-      const courseRes = await axios.post(`${proxy}/courses/create`, course);
+      const courseRes = await api.post(`/courses/create`, course);
 
       if (courseRes?.data?._id) {
         window.location.pathname = `/educator/courses/${courseRes.data._id}`;
       }
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Đã xảy ra lỗi khi tạo khóa học.");
     } finally {
       setUploading(false);
     }

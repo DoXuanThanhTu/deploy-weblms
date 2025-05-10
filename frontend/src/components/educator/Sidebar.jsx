@@ -5,7 +5,7 @@ import axios from "axios";
 import useAuthStore from "../../utils/authStore";
 const proxy = import.meta.env.VITE_API_URL;
 const SidebarContainer = styled.div`
-  width: 200px;
+  width: 180px;
   position: fixed;
   top: 0;
   left: 0;
@@ -36,7 +36,6 @@ const SidebarItem = styled(Link)`
 const ToggleButton = styled.button`
   position: fixed;
   top: 10px;
-  left: 10px;
   z-index: 1101;
   background-color: #2c3e50;
   color: white;

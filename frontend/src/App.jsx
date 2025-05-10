@@ -22,6 +22,7 @@ import useAuthStore from "./utils/authStore";
 import { Navigate } from "react-router-dom";
 import { AccessDenied, NotFound } from "./pages/OtherPage";
 import StudentMainLayout from "./pages/students/StudentMainLayout";
+import LessonDetail from "./pages/students/LessonDetail";
 const Container = styled.div`
   width: 100%;
   background-color: white;
@@ -35,16 +36,18 @@ const App = () => {
     <Routes>
       <Route element={<StudentMainLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/my-course" element={<MyEnrollments />} />
+
         <Route path="/login" element={<Login login={true} />} />
         <Route path="/register" element={<Login login={false} />} />
         <Route path="/course-list" element={<CourseList />} />
         <Route path="/course-list/:input" element={<CourseList />} />
         <Route path="/course/:id" element={<CourseDetail />} />
+        <Route path="/course/:id/lesson/:lessonId" element={<LessonDetail />} />
         <Route path="/my-enrollment" element={<MyEnrollments />} />
         <Route path="/player/:courseId" element={<Player />} />
         <Route path="/loading/:path" element={<Loading />} />
       </Route>
-
       <Route
         path="/educator/*"
         element={

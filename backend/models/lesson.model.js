@@ -7,12 +7,15 @@ const LessonSchema = new mongoose.Schema(
       ref: "Chapter",
       required: true,
     },
+    courseId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+      required: true,
+    },
     title: { type: String, required: true },
     content: { type: String },
-    videoUrl: { type: String },
-    attachments: { type: [String] },
     order: { type: Number, required: true },
-    isPublished: { type: Boolean, default: false },
+    isPublished: { type: Boolean, default: true },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/students/Navbar";
 import useAuthStore from "../../utils/authStore";
 import api from "../../utils/apiRequest";
+import RichTextEditor from "../../components/tool/RichTextEditor";
+import CoursesList from "../../components/students/CourseExplorer";
 const Home = () => {
   const { currentUser } = useAuthStore();
   const [courses, setCourses] = useState(null);
@@ -14,9 +16,7 @@ const Home = () => {
   }, []);
   return (
     <div>
-      Day la {currentUser?.username}
-      {courses &&
-        courses.map((course) => <div key={course._id}>{course.title}</div>)}
+      <CoursesList />
     </div>
   );
 };

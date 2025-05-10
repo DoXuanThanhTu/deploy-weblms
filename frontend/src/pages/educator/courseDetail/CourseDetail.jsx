@@ -23,7 +23,7 @@ const CourseDetail = () => {
     const fetchData = async () => {
       try {
         const [courseRes, chaptersRes, lessonsRes] = await Promise.all([
-          api.get(`/courses/get-one/${courseId}`),
+          api.get(`/courses/get-one/educator/${courseId}`),
           api.get(`/chapters/get-all/${courseId}`),
         ]);
         setCourse(courseRes.data);
@@ -53,7 +53,7 @@ const CourseDetail = () => {
       };
       setUpdating(true);
       try {
-        await axios.post("http://localhost:8000/chapters/create", chapter);
+        await api.post("/chapters/create", chapter);
         await sleep(500);
       } catch (error) {
       } finally {
@@ -164,6 +164,7 @@ const CourseDetail = () => {
             </div>
           ) : (
             <div>
+              {console.log(course)}
               <div className="item">
                 <label htmlFor="">Title</label>
                 <h2>{course.title}</h2>
@@ -193,7 +194,9 @@ const CourseDetail = () => {
           {formData != null ? (
             <ul className="chapters">
               {formData.map((chapter, index) => {
-                return <Chapter key={index} chapter={chapter} />;
+                return (
+                  <Chapter key={index} chapter={chapter} courseId={courseId} />
+                );
               })}
             </ul>
           ) : (

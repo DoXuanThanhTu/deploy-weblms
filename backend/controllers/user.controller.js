@@ -44,6 +44,7 @@ const registerUser = async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV == "production",
+    sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000,
   });
   return res.status(200).json(user);
@@ -70,7 +71,9 @@ const loginUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV == "production",
-      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "None",
+
+      maxAge: 2 * 60 * 60 * 1000,
     });
     const { password: hashedPassword, ...others } = user.toObject();
     return res.status(200).json(others);
@@ -79,8 +82,26 @@ const loginUser = async (req, res) => {
     return res.status(500).json("Server error");
   }
 };
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    return res.status(200).json(updatedUser);
+  } catch (err) {
+    console.error("Update user failed:", err);
+    return res.status(500).json({ message: "Something went wrong." });
+  }
+};
 const logoutUser = async (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logout successful!" });
 };
-export { createUser, getUser, registerUser, loginUser, logoutUser };
+export { createUser, getUser, registerUser, loginUser, logoutUser, updateUser };

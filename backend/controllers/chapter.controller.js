@@ -68,5 +68,31 @@ const deleteChapter = async (req, res) => {
     res.status(500).json({ message: "Error deleting chapter" });
   }
 };
+const updateChapter = async (req, res) => {
+  const user = req.user;
+  try {
+    const chapter = await Chapter.findById(req.params.id);
+    const course = await Course.findById(chapter.courseId);
 
-export { getAllChapter, createChapter, getChapter, deleteChapter };
+    if (!course || course.createdBy.toString() !== user.userId.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const updatedChapter = await Chapter.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true }
+    );
+
+    res.json(updatedChapter);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating chapter", error: error });
+  }
+};
+export {
+  getAllChapter,
+  createChapter,
+  getChapter,
+  deleteChapter,
+  updateChapter,
+};

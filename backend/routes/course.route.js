@@ -4,14 +4,18 @@ import {
   updateCourse,
   getAllCourse,
   deleteCourse,
+  getACourse,
+  getMyCourse,
 } from "../controllers/course.controller.js";
 import { authMiddleware } from "../utils/authMiddleware.js";
 import express from "express";
 
 const router = express.Router();
-router.get("/get-one/:id", authMiddleware, getCourse);
+router.get("/get-one/:id", authMiddleware, getACourse);
+router.get("/get-one/educator/:id", authMiddleware, getCourse);
 router.get("/get-all", authMiddleware, getAllCourse);
 router.post("/create", authMiddleware, createCourse);
 router.patch("/:id", authMiddleware, updateCourse);
 router.delete("/:id", authMiddleware, deleteCourse);
+router.get("/my-course/:id", authMiddleware, getMyCourse);
 export default router;

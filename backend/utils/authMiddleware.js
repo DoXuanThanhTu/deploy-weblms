@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import Lesson from "../models/lesson.model.js";
+import User from "../models/user.model.js";
 const authMiddleware = (req, res, next) => {
   const token = req.cookies.token;
 
@@ -17,14 +17,21 @@ const authMiddleware = (req, res, next) => {
     next();
   }
 };
-const checkLessonOwner = async (req, res, next) => {
-  const lesson = await Lesson.findById(req.params.lessonId);
-  if (!lesson) return res.status(404).json({ message: "Lesson not found" });
+const checkAccess = async (userId, lessonId) => {
+  try {
+    const user = await User.findById(userId).populate("purchasedLessons");
+    const lesson = user.purchasedLessons.find(
+      (lesson) => lesson._id.toString() === lessonId.toString()
+    );
 
-  if (lesson.ownerId.toString() !== req.user.userId) {
-    return res.status(403).json({ message: "Unauthorized" });
+    if (!lesson) {
+      throw new Error("Bạn chưa đăng ký khóa học này. Vui lòng thanh toán.");
+    }
+    return true;
+  } catch (err) {
+    console.log(err.message);
+    return false;
   }
-
-  next();
 };
-export { authMiddleware, checkLessonOwner };
+
+export { authMiddleware, checkAccess };
