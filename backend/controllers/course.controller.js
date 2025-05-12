@@ -2,6 +2,7 @@ import Chapter from "../models/chapter.model.js";
 import Course from "../models/course.model.js";
 import Lesson from "../models/lesson.model.js";
 import User from "../models/user.model.js";
+import Review from "../models/review.model.js";
 const getAllCourse = async (req, res) => {
   const currentUser = req.user;
   try {
@@ -171,6 +172,41 @@ const getMyCourse = async (req, res) => {
     res.status(500).json({ message: "Failed to load courses." });
   }
 };
+const getCourseInfo = async (req, res) => {
+  const { courseId } = req.params;
+
+  try {
+    // Tìm khóa học trong database
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Tính số lượng đánh giá
+    const ratingCount = await Review.countDocuments({ courseId });
+
+    // Lấy tất cả đánh giá của khóa học và tính tổng rating
+    const reviews = await Review.find({ courseId });
+
+    let totalRating = 0;
+    reviews.forEach((review) => {
+      totalRating += review.rating;
+    });
+
+    const averageRating =
+      ratingCount > 0 ? (totalRating / ratingCount).toFixed(2) : 0;
+
+    // Trả về thông tin khóa học cùng với số lượng đánh giá và rating trung bình
+    return res.json({
+      ratingCount,
+      averageRating,
+    });
+  } catch (err) {
+    console.error("Error fetching course info:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 export {
   getCourse,
   getAllCourse,
@@ -179,4 +215,5 @@ export {
   deleteCourse,
   getACourse,
   getMyCourse,
+  getCourseInfo,
 };

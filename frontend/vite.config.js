@@ -6,11 +6,4 @@ export default defineConfig({
   define: {
     global: "window",
   },
-  base: "/",
-  build: {
-    outDir: "dist",
-    rollupOptions: {
-      input: "index.html",
-    },
-  },
 });

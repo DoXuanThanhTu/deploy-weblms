@@ -25,30 +25,42 @@ const getUser = async (req, res) => {
   }
 };
 const registerUser = async (req, res) => {
-  const { username, displayName, email, password, role } = req.body;
-  if (!username || !email || !password || !displayName) {
+  const { username, email, password, role } = req.body;
+
+  if (!username || !email || !password) {
     return res.status(400).json({ message: "All fields are required!" });
   }
+
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return res
+      .status(409)
+      .json({ message: "Email already exists. Please use a different email." });
+  }
+
   const hashedPassword = handleHash(password, 10, 12);
   const user = await User.create({
     username,
-    displayName,
     email,
     password: hashedPassword,
     role: role ? role : "student",
   });
+
   const token = jwt.sign(
     { userId: user._id, role: role },
     process.env.JWT_SECRET
   );
+
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV == "production",
+    secure: process.env.NODE_ENV === "production",
     sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000,
   });
+
   return res.status(200).json(user);
 };
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 

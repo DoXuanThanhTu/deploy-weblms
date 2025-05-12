@@ -1,0 +1,128 @@
+.home-section {
+    background-color: #ffffff;
+    padding: 0;
+  }
+  
+  .home-content {
+    background-color: #f3f0f8;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px 80px;
+    box-sizing: border-box;
+  }
+  
+  .home-text {
+    flex: 1;
+    padding-right: 40px;
+  }
+  
+  .home-text h1 {
+    font-size: 44px;
+    color: #8a4baf;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  
+  .home-text p {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  .home-text button {
+    background-color: #8a4baf;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .home-text button:hover {
+    background-color: #7642a3;
+  }
+  
+  .home-image {
+    flex: 1;
+    text-align: right;
+  }
+  
+  .home-image img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Course Categories section */
+  .course-categories {
+    background-color: #ffffff;
+    margin-top: 50px;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .course-categories h2 {
+    font-size: 32px;
+    color: #333;
+    margin-top: 100px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  
+  .category-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* Card cho mỗi category */
+  .category-card {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff; /* nền trắng */
+    color: #333;
+    padding: 20px;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 500;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); /* bóng đổ nhẹ */
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .category-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* Icon nằm trong vòng tròn */
+  .category-icon {
+    background-color: #f3eafd; /* màu nền vòng tròn */
+    font-size: 24px;
+    color: #8a4baf;
+    border-radius: 50%;
+    padding: 12px;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    box-sizing: border-box;
+  }
+  
+  /* course explorer */
+  .course-explorer h3 {
+    font-size: 32px;
+    color: #333;
+    margin-top: 100px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
