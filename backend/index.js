@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://deploy-weblms-fe.onrender.com",
+    origin: "https://route-render.web.app",
     credentials: true,
   })
 );
