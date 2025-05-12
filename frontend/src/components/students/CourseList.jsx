@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-
+import api from "../../utils/apiRequest";
 const Grid = styled.div`
   display: grid;
   gap: 24px;
@@ -85,15 +85,56 @@ const Stats = styled.div`
 `;
 
 const CourseList = ({ courses, onCourseClick }) => {
+  const [coursesWithInfo, setCoursesWithInfo] = useState([]);
+
+  useEffect(() => {
+    const fetchAllCourses = async () => {
+      try {
+        const coursesRes = await api.get("/courses/get-all");
+        const courseList = coursesRes.data;
+
+        const updatedCourses = await Promise.all(
+          courseList.map(async (course) => {
+            try {
+              const [infoRes, usersRes] = await Promise.all([
+                api.get(`/courses/get-info/${course._id}`),
+                api.get(`/courses/${course._id}/users`),
+              ]);
+
+              return {
+                ...course,
+                averageRating: infoRes.data.averageRating,
+                ratingCount: infoRes.data.ratingCount,
+                enrollmentCount: usersRes.data.length,
+              };
+            } catch (err) {
+              console.error(
+                `Failed to fetch data for course ${course._id}`,
+                err
+              );
+              return course;
+            }
+          })
+        );
+
+        setCoursesWithInfo(updatedCourses);
+      } catch (err) {
+        console.error("Failed to fetch courses:", err);
+      }
+    };
+
+    fetchAllCourses();
+  }, []);
+
   return (
     <Grid>
-      {courses.map((course) => (
+      {coursesWithInfo.map((course) => (
         <Link
           to={`/course/${course._id}`}
           key={course._id}
           style={{ textDecoration: "none", color: "inherit" }}
         >
-          <Card key={course._id} onClick={() => onCourseClick(course)}>
+          <Card>
             <ImageWrapper>
               {course.thumbnail ? (
                 <Image src={course.thumbnail} alt={course.title} />
@@ -108,9 +149,9 @@ const CourseList = ({ courses, onCourseClick }) => {
               <Description>{course.description}</Description>
               <Stats>
                 <span>
-                  ⭐ {course.rating?.toFixed(1) || 0} ({course.ratingCount})
+                  ⭐ {course.averageRating || 0} ({course.ratingCount || 0})
                 </span>
-                <span>👥 {course.enrollmentCount} HV</span>
+                <span>👥 {course.enrollmentCount || 0} HV</span>
               </Stats>
             </Info>
           </Card>

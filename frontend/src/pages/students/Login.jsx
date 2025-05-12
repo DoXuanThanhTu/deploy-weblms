@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import useAuthStore from "../../utils/authStore";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+
 const proxy = import.meta.env.VITE_API_URL;
 const Container = styled.div`
   display: flex;
@@ -100,22 +102,52 @@ const Hr = styled.hr`
 
 const AuthForm = ({ fields, data, onChange, onSubmit, submitText }) => (
   <form onSubmit={onSubmit}>
-    {fields.map(({ name, type, label }) => (
+    {fields.map(({ name, type, label, options }) => (
       <div key={name} style={{ marginTop: 10 }}>
         <label htmlFor={name}>{label}</label>
-        <Input type={type} name={name} value={data[name]} onChange={onChange} />
+        {type === "select" ? (
+          <select
+            name={name}
+            value={data[name]}
+            onChange={onChange}
+            style={{
+              width: "100%",
+              fontSize: "18px",
+              height: "35px",
+              border: "1px solid #d4d4d4",
+              borderRadius: "10px",
+              paddingLeft: "10px",
+            }}
+          >
+            {options.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt.charAt(0).toUpperCase() + opt.slice(1)}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <Input
+            type={type}
+            name={name}
+            value={data[name]}
+            onChange={onChange}
+          />
+        )}
       </div>
     ))}
     <ButtonSubmit type="submit">{submitText}</ButtonSubmit>
   </form>
 );
+
 const Login = ({ login }) => {
   const [isLogin, setIsLogin] = useState(login);
   const [data, setData] = useState({
     username: "",
     email: "",
     password: "",
+    role: "student", // default role
   });
+
   const { currentUser, setCurrentUser, removeCurrentUser } = useAuthStore();
   const navigate = useNavigate();
   const handleChange = (e) => {
@@ -128,8 +160,10 @@ const Login = ({ login }) => {
     if (isLogin) {
       await handleLogin();
     } else {
+      await handleRegister();
     }
   };
+
   const handleLogin = async () => {
     try {
       const res = await axios.post(
@@ -144,13 +178,36 @@ const Login = ({ login }) => {
       );
 
       const role = res.data.role;
+      toast.success("Login successful!");
       if (role == "student") {
         navigate("/");
       } else if (role == "educator") {
         navigate("/educator");
       }
       setCurrentUser(res.data);
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Login failed! Please check your credentials.");
+    }
+  };
+  const handleRegister = async () => {
+    try {
+      const res = await axios.post(
+        `${proxy}/users/register`,
+        {
+          username: data.username,
+          email: data.email,
+          password: data.password,
+          role: data.role,
+        },
+        { withCredentials: true }
+      );
+      toast.success("Registration successful!");
+      setIsLogin(true);
+      navigate("/login");
+    } catch (error) {
+      toast.error("Registration failed. Email may already be in use.");
+      console.error(error);
+    }
   };
 
   const loginFields = [
@@ -161,7 +218,14 @@ const Login = ({ login }) => {
     { name: "username", type: "text", label: "Username" },
     { name: "email", type: "email", label: "Email" },
     { name: "password", type: "password", label: "Password" },
+    {
+      name: "role",
+      type: "select",
+      label: "Role",
+      options: ["student", "educator"],
+    },
   ];
+
   return (
     <Container>
       <Wrapper>

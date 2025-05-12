@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../utils/authStore.js";
 import axios from "axios";
+import "./header.css";
 const proxy = import.meta.env.VITE_API_URL;
 
 const Container = styled.div`
@@ -77,10 +78,19 @@ const Hr = styled.hr`
   border: 0.5px solid #dfe3e6;
 `;
 const Navbar = () => {
+  const [showDropdown, setShowDropdown] = useState(false);
   const [open, setOpen] = useState(false);
   const [customUser, setCustomUser] = useState(false);
   const handleOpen = () => {
     setOpen(!open);
+  };
+  const toggleDropdown = () => {
+    setShowDropdown((prev) => !prev);
+  };
+
+  // Hàm đóng dropdown khi chọn item trong menu
+  const closeDropdown = () => {
+    setShowDropdown(false);
   };
   const navigate = useNavigate();
   const path = useLocation().pathname;
@@ -149,21 +159,35 @@ const Navbar = () => {
               alignItems: "center",
               justifyContent: "center",
               gap: "5px",
-              backgroundColor: "red",
               cursor: "pointer",
             }}
             onClick={handleCustomUser}
           >
-            <img
-              src={
-                currentUser.img ? `${currentUser.img}` : "/icons/noavatar.svg"
-              }
-              alt="noavatar"
-              width="32px"
-            />
-            {currentUser.username}
+            {currentUser && (
+              <div className="dropdown">
+                <img
+                  src={currentUser.img || "/icons/default-ava.png"}
+                  alt="avatar"
+                  className="avatar"
+                  onClick={toggleDropdown}
+                />
+                {showDropdown && (
+                  <div className="dropdown-menu">
+                    <Link to="/account" onClick={closeDropdown}>
+                      Hồ sơ của tôi
+                    </Link>
+                    {/* Chuyển hướng đến My Course */}
+                    <Link to="/my-course" onClick={closeDropdown}>
+                      Khóa học của tôi
+                    </Link>
+                    <button onClick={handleLogout}>Đăng xuất</button>
+                  </div>
+                )}
+              </div>
+            )}
+            {/* {currentUser.username}
             {customUser && <button onClick={handleLogout}>Logout</button>}
-            {customUser && <button onClick={handleMyCourse}>MyCourse</button>}
+            {customUser && <button onClick={handleMyCourse}>MyCourse</button>} */}
           </div>
         )}
       </Wrapper>

@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import api from "../../utils/apiRequest";
+import RatingForm from "../../components/students/Rating";
+import Rating from "../../components/students/Rating";
+import TopReviews from "../../components/students/TopReviews";
+import useAuthStore from "../../utils/authStore";
 const Container = styled.div`
   padding: 24px;
   max-width: 1200px;
@@ -33,15 +37,32 @@ const SubTitle = styled.h2`
   font-size: 18px;
   font-weight: 400;
 `;
-
 const EnrollBox = styled.div`
   margin-top: 16px;
-  background: #e5e7eb;
-  color: #333;
-  padding: 10px 16px;
-  border-radius: 6px;
-  display: inline-block;
+  background: ${(props) => (props.enrolled ? "#d1fae5" : "#e0f2fe")};
+  color: ${(props) => (props.enrolled ? "#065f46" : "#1e3a8a")};
+  padding: 12px 20px;
+  border-radius: 8px;
   font-weight: 500;
+  display: inline-block;
+  font-size: 16px;
+  border: 1px solid ${(props) => (props.enrolled ? "#34d399" : "#60a5fa")};
+
+  button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background-color: #1d4ed8;
+    }
+  }
 `;
 
 const Image = styled.img`
@@ -184,11 +205,30 @@ const Head = styled.div`
   width: 100%;
   justify-content: space-around;
 `;
+
+const CourseLayout = styled.div`
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const Sidebar = styled.div`
+  flex: 1;
+  min-width: 250px;
+`;
 const CourseDetail = () => {
+  const { currentUser } = useAuthStore();
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [openChapters, setOpenChapters] = useState([]);
-
+  const [review, setReview] = useState([]);
+  const [info, setInfo] = useState([]);
+  const [en, setEn] = useState(0);
   const dropDown = (index) => {
     if (openChapters.includes(index)) {
       setOpenChapters(openChapters.filter((i) => i !== index));
@@ -196,40 +236,85 @@ const CourseDetail = () => {
       setOpenChapters([...openChapters, index]);
     }
   };
+  const fetchTopReviews = async (courseId) => {
+    const res = await api.get(`/reviews/top/${courseId}`);
+    const data = await res.data;
+    return data;
+  };
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchData = async () => {
       try {
         const res = await api.get(`/courses/get-one/${id}`);
         setCourse(res.data.course);
+
+        const info = await api.get(`/courses/get-info/${id}`);
+        setInfo(info.data);
+        const re = await api.get(`/courses/${id}/users`);
+        if (re.data) {
+          setEn(re.data.length);
+        }
+        const topReviews = await fetchTopReviews(id);
+        setReview(topReviews);
+
+        const user = currentUser;
+        if (user?._id) {
+          const check = await api.get(`/enrollments/check`, {
+            params: { userId: user._id, courseId: id },
+          });
+          setIsEnrolled(check.data.enrolled);
+        }
       } catch (err) {
-        console.error("Failed to fetch course:", err);
+        console.error("Failed to fetch data:", err);
       }
     };
 
-    fetchCourse();
+    fetchData();
   }, [id]);
 
   if (!course) return <p>Loading course...</p>;
-
   return (
     <Container>
       <Header>
         <TitleSection>
           <Title>{course.title}</Title>
           <SubTitle>{course.category}</SubTitle>
-          <EnrollBox>Enrollment in this course is by invitation only</EnrollBox>
+          <EnrollBox enrolled={isEnrolled}>
+            {isEnrolled ? (
+              "Đã đăng ký"
+            ) : (
+              <button
+                onClick={async () => {
+                  try {
+                    if (!currentUser) return alert("Bạn cần đăng nhập trước");
+                    await api.post("/enrollments/create", {
+                      userId: currentUser._id,
+                      courseId: id,
+                    });
+
+                    setIsEnrolled(true);
+                  } catch (err) {
+                    console.error("Enrollment failed:", err);
+                    alert("Đăng ký thất bại");
+                  }
+                }}
+              >
+                Đăng ký học
+              </button>
+            )}
+          </EnrollBox>
         </TitleSection>
         <Image src={course.thumbnail} alt={course.title} />
       </Header>
 
       <Row>
         <div>
-          <strong>⭐ Rating:</strong> {course.rating} ({course.ratingCount}
+          <strong>⭐ Rating:</strong> {info.averageRating} ({info.ratingCount}
           votes)
         </div>
         <div>
-          <strong>👥 Enrolled:</strong> {course.enrollmentCount} students
+          <strong>👥 Enrolled:</strong> {en} students
         </div>
       </Row>
 
@@ -256,29 +341,41 @@ const CourseDetail = () => {
             </div>
           ))}
         </ChapterList> */}
-        <CourseContent>
-          {course.chapters.map((chapter, chapterIndex) => (
-            <CourseItem key={chapterIndex}>
-              <Head>
-                <ArrowButton
-                  $dropStatus={openChapters.includes(chapterIndex)}
-                  onClick={() => dropDown(chapterIndex)}
-                >
-                  <ArrowDrop src="/icons/arrow_drop.png" />
-                </ArrowButton>
-                <Content>{chapter.title}</Content>
-              </Head>
-              <SubContent $dropStatus={openChapters.includes(chapterIndex)}>
-                {chapter.lessons.map((lesson, lessonIndex) => (
-                  <SubContentItem key={lessonIndex}>
-                    {lesson.title}
-                  </SubContentItem>
-                ))}
-              </SubContent>
-            </CourseItem>
-          ))}
-        </CourseContent>
+        <CourseLayout>
+          <CourseContent>
+            {course.chapters.map((chapter, chapterIndex) => (
+              <CourseItem key={chapterIndex}>
+                <Head>
+                  <ArrowButton
+                    $dropStatus={openChapters.includes(chapterIndex)}
+                    onClick={() => dropDown(chapterIndex)}
+                  >
+                    <ArrowDrop src="/icons/arrow_drop.png" />
+                  </ArrowButton>
+                  <Content>{chapter.title}</Content>
+                </Head>
+                <SubContent $dropStatus={openChapters.includes(chapterIndex)}>
+                  {chapter.lessons.map((lesson, lessonIndex) => (
+                    <SubContentItem key={lessonIndex}>
+                      <Link
+                        to={`lesson/${lesson._id}`}
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        {lesson.title}
+                      </Link>
+                    </SubContentItem>
+                  ))}
+                </SubContent>
+              </CourseItem>
+            ))}
+          </CourseContent>
+
+          <Sidebar>
+            <TopReviews reviews={review} />
+          </Sidebar>
+        </CourseLayout>
       </Section>
+      <Rating />
     </Container>
   );
 };

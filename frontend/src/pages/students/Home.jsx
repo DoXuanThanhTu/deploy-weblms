@@ -5,6 +5,9 @@ import api from "../../utils/apiRequest";
 import RichTextEditor from "../../components/tool/RichTextEditor";
 import CoursesList from "../../components/students/CourseExplorer";
 import "./home.css";
+import { useNavigate } from "react-router-dom";
+import homeImage from "/icons/home.png";
+
 const Home = () => {
   const { currentUser } = useAuthStore();
   const [courses, setCourses] = useState(null);
@@ -15,6 +18,11 @@ const Home = () => {
   useEffect(() => {
     fetchCoursePublished();
   }, []);
+  const navigate = useNavigate(); // hook để chuyển hướng
+
+  const handleLoginRedirect = () => {
+    navigate("/login"); // Chuyển hướng đến trang login
+  };
   return (
     <div>
       <section className="home-section">
@@ -32,7 +40,7 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="course-categories">
+        {/* <div className="course-categories">
           <h2>Course Categories</h2>
           <div className="category-list">
             <div className="category-card">
@@ -52,11 +60,7 @@ const Home = () => {
               Mobile App
             </div>
           </div>
-        </div>
-
-        <div className="course-explorer">
-          <h3>Course Explorer</h3>
-        </div>
+        </div> */}
       </section>
       <CoursesList />
     </div>
