@@ -90,8 +90,8 @@ const CourseList = ({ courses, onCourseClick }) => {
   useEffect(() => {
     const fetchAllCourses = async () => {
       try {
-        const coursesRes = await api.get("/courses/get-all");
-        const courseList = coursesRes.data;
+        // const coursesRes = await api.get("/courses/get-all");
+        const courseList = courses;
 
         const updatedCourses = await Promise.all(
           courseList.map(async (course) => {
@@ -124,7 +124,7 @@ const CourseList = ({ courses, onCourseClick }) => {
     };
 
     fetchAllCourses();
-  }, []);
+  }, [courses]);
 
   return (
     <Grid>

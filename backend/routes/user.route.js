@@ -15,6 +15,6 @@ route.post("/register", registerUser);
 route.post("/login", loginUser);
 route.post("/logout", logoutUser);
 route.patch("/:id", updateUser);
-route.get("/:userId/courses", getCoursesByUserId);
+route.get("/:userId/", getCoursesByUserId);
 
 export default route;

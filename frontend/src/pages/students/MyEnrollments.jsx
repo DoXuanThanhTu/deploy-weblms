@@ -67,11 +67,10 @@ const MyEnrollments = () => {
   useEffect(() => {
     const fetchMyCourses = async () => {
       try {
-        const res = await api.get(`/users/get/${currentUser._id}`);
-        const courseIds = res.data.myCourses;
-
+        const res = await api.get(`/users/${currentUser._id}`);
+        const courseIds = res.data;
         const courseDetails = await Promise.all(
-          courseIds.map((id) => api.get(`/courses/get-one/${id}`))
+          courseIds.map((course) => api.get(`/courses/get-one/${course._id}`))
         );
 
         const fullCourses = courseDetails.map((res) => res.data.course);
